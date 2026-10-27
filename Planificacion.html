@@ -192,13 +192,12 @@
         <!-- ENCABEZADO -->
         <header>
             <div class="logo-container">
-                <!-- Logo ajustado para visualización directa desde Google Drive -->
                 <img src="https://lh3.googleusercontent.com/d/1rTKfE0cHm5Y_tqnwzwLwDOiRNs4X9h_6=s800" alt="InnovaMed Logo">
             </div>
             
             <div class="header-title-container">
                 <h1>Planificación del Día</h1>
-                <div class="date-badge" id="current-date-display">Fecha: 27/10/2026</div>
+                <div class="date-badge" id="current-date-display">Fecha actual</div>
             </div>
 
             <div class="status-indicator">
@@ -209,15 +208,15 @@
 
         <!-- TABLA PRINCIPAL -->
         <div class="table-card">
-            <div class="date-section-header">
-                📅 27/10/2026
+            <div class="date-section-header" id="section-date-header">
+                📅 Cargando fecha...
             </div>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
                             <th>Quirófano</th>
-                            <th>Nombre del Paciente</th>
+                            <th>Paciente</th>
                             <th>Diagnóstico</th>
                             <th>Plan</th>
                             <th>Cirujanos</th>
@@ -230,33 +229,11 @@
                         </tr>
                     </thead>
                     <tbody id="planning-table-body">
-                        <!-- Fila 1 de Ejemplo -->
+                        <!-- Los datos se cargan dinámicamente desde AppSheet mediante parámetros URL -->
                         <tr>
-                            <td><strong>A</strong></td>
-                            <td>carolina parraga</td>
-                            <td>POT Cervicotomia ante...</td>
-                            <td>Accidente cerebro vasc...</td>
-                            <td><span class="bold-role">Cirujano:</span> Dra. Rita Chacon <br><span class="bold-role">1er Ay.:</span> Inst.: Marta Gonzalez</td>
-                            <td><span class="bold-role">Circ.:</span> Marta Gonzalez</td>
-                            <td>Dra. Juraen Aguilar</td>
-                            <td class="time-cell">8:45:13</td>
-                            <td class="time-cell">8:47:48</td>
-                            <td class="time-cell">8:50:25</td>
-                            <td><span class="badge badge-finalizada">Finalizada</span></td>
-                        </tr>
-                        <!-- Fila 2 de Ejemplo -->
-                        <tr>
-                            <td><strong>B</strong></td>
-                            <td>Luis Adrianza</td>
-                            <td></td>
-                            <td>Accidente cerebro vasc...</td>
-                            <td><span class="bold-role">Cirujano:</span> Dr. Nelson Medina <br><span class="bold-role">1er Ay.:</span> Inst.: Jose perez</td>
-                            <td><span class="bold-role">Circ.:</span> Dra. Carolina Párraga</td>
-                            <td>Dra. Carolina Párraga</td>
-                            <td class="time-cell">8:50:00</td>
-                            <td class="time-cell">8:50:27</td>
-                            <td class="time-cell">-</td>
-                            <td><span class="badge badge-iniciada">Iniciada</span></td>
+                            <td colspan="11" style="text-align: center; color: #666; padding: 20px;">
+                                Esperando datos desde AppSheet... Seleccione un registro y haga clic en el botón de enlace web.
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -265,27 +242,52 @@
     </div>
 
     <script>
-        // Actualizar la fecha y hora actual en tiempo real
-        function updateDateTime() {
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+
+            const quirofano = params.get('Quirofano');
+            const paciente = params.get('Paciente');
+            const diagnostico = params.get('Diagnostico');
+            const plan = params.get('Plan');
+            const cirujano = params.get('Cirujano');
+            const enfermeria = params.get('Enfermeria');
+            const anestesiologo = params.get('Anestesiologo');
+            const hora = params.get('Hora');
+            const inicio = params.get('Inicio');
+            const finalizacion = params.get('Finalizacion');
+            const estatus = params.get('Estatus');
+            const diaHora = params.get('DiaHora');
+
+            // Si se reciben parámetros desde AppSheet, rellenar la tabla
+            if (paciente) {
+                const tbody = document.getElementById('planning-table-body');
+                const badgeClass = estatus === 'Finalizada' ? 'badge-finalizada' : 'badge-iniciada';
+                
+                tbody.innerHTML = `
+                    <tr>
+                        <td><strong>${quirofano || 'N/A'}</strong></td>
+                        <td>${paciente}</td>
+                        <td>${diagnostico || ''}</td>
+                        <td>${plan || ''}</td>
+                        <td><span class="bold-role">${cirujano || ''}</span></td>
+                        <td><span class="bold-role">${enfermeria || ''}</span></td>
+                        <td>${anestesiologo || ''}</td>
+                        <td class="time-cell">${hora || ''}</td>
+                        <td class="time-cell">${inicio || ''}</td>
+                        <td class="time-cell">${finalizacion || '-'}</td>
+                        <td><span class="badge ${badgeClass}">${estatus || 'Activa'}</span></td>
+                    </tr>
+                `;
+            }
+
+            // Actualizar la fecha y hora actual en la interfaz
             const now = new Date();
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            const fechaStr = now.toLocaleDateString('es-ES', options);
-            document.getElementById('current-date-display').innerText = `Fecha actual: ${fechaStr}`;
-        }
-        updateDateTime();
-
-        // Función para conectar con Apps Script / Google Sheets si deseas automatizar la lectura en vivo
-        function fetchSheetData() {
-            // Ejemplo de llamada opcional a google.script.run si despliegas como App Web de Apps Script
-            /*
-            google.script.run.withSuccessHandler(function(data) {
-                // Renderizar filas dinámicamente aquí
-            }).obtenerPlanificacionHoy();
-            */
-        }
-
-        // Auto-refresco de seguridad cada 30 segundos
-        setInterval(fetchSheetData, 30000);
+            const fechaFormateada = now.toLocaleDateString('es-ES', options);
+            
+            document.getElementById('current-date-display').innerText = `Fecha: ${fechaFormateada}`;
+            document.getElementById('section-date-header').innerText = `📅 ${diaHora || fechaFormateada}`;
+        };
     </script>
 </body>
 </html>
