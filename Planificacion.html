@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnovaMed - Planificación del Día</title>
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #004080;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --badge-iniciada: #e3f2fd;
+            --badge-iniciada-text: #0d47a1;
+            --badge-finalizada: #e8f5e9;
+            --badge-finalizada-text: #1b5e20;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container img {
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .header-title-container {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 28px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .date-badge {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #2e7d32;
+            background: #e8f5e9;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(76, 175, 80, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .date-section-header {
+            background: #f8fafc;
+            padding: 12px 20px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--secondary-color);
+            padding: 14px 12px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-iniciada {
+            background-color: var(--badge-iniciada);
+            color: var(--badge-iniciada-text);
+        }
+
+        .badge-finalizada {
+            background-color: var(--badge-finalizada);
+            color: var(--badge-finalizada-text);
+        }
+
+        .bold-role {
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .time-cell {
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .logo-container {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ENCABEZADO -->
+        <header>
+            <div class="logo-container">
+                <!-- Logo ajustado para visualización directa desde Google Drive -->
+                <img src="https://lh3.googleusercontent.com/d/1rTKfE0cHm5Y_tqnwzwLwDOiRNs4X9h_6=s800" alt="InnovaMed Logo">
+            </div>
+            
+            <div class="header-title-container">
+                <h1>Planificación del Día</h1>
+                <div class="date-badge" id="current-date-display">Fecha: 27/10/2026</div>
+            </div>
+
+            <div class="status-indicator">
+                <div class="pulse-dot"></div>
+                <span>En Vivo (Sincronizado)</span>
+            </div>
+        </header>
+
+        <!-- TABLA PRINCIPAL -->
+        <div class="table-card">
+            <div class="date-section-header">
+                📅 27/10/2026
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Quirófano</th>
+                            <th>Nombre del Paciente</th>
+                            <th>Diagnóstico</th>
+                            <th>Plan</th>
+                            <th>Cirujanos</th>
+                            <th>Enfermería</th>
+                            <th>Anestesiólogo</th>
+                            <th>Hora</th>
+                            <th>Inicio</th>
+                            <th>Finalización</th>
+                            <th>Estatus</th>
+                        </tr>
+                    </thead>
+                    <tbody id="planning-table-body">
+                        <!-- Fila 1 de Ejemplo -->
+                        <tr>
+                            <td><strong>A</strong></td>
+                            <td>carolina parraga</td>
+                            <td>POT Cervicotomia ante...</td>
+                            <td>Accidente cerebro vasc...</td>
+                            <td><span class="bold-role">Cirujano:</span> Dra. Rita Chacon <br><span class="bold-role">1er Ay.:</span> Inst.: Marta Gonzalez</td>
+                            <td><span class="bold-role">Circ.:</span> Marta Gonzalez</td>
+                            <td>Dra. Juraen Aguilar</td>
+                            <td class="time-cell">8:45:13</td>
+                            <td class="time-cell">8:47:48</td>
+                            <td class="time-cell">8:50:25</td>
+                            <td><span class="badge badge-finalizada">Finalizada</span></td>
+                        </tr>
+                        <!-- Fila 2 de Ejemplo -->
+                        <tr>
+                            <td><strong>B</strong></td>
+                            <td>Luis Adrianza</td>
+                            <td></td>
+                            <td>Accidente cerebro vasc...</td>
+                            <td><span class="bold-role">Cirujano:</span> Dr. Nelson Medina <br><span class="bold-role">1er Ay.:</span> Inst.: Jose perez</td>
+                            <td><span class="bold-role">Circ.:</span> Dra. Carolina Párraga</td>
+                            <td>Dra. Carolina Párraga</td>
+                            <td class="time-cell">8:50:00</td>
+                            <td class="time-cell">8:50:27</td>
+                            <td class="time-cell">-</td>
+                            <td><span class="badge badge-iniciada">Iniciada</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Actualizar la fecha y hora actual en tiempo real
+        function updateDateTime() {
+            const now = new Date();
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            const fechaStr = now.toLocaleDateString('es-ES', options);
+            document.getElementById('current-date-display').innerText = `Fecha actual: ${fechaStr}`;
+        }
+        updateDateTime();
+
+        // Función para conectar con Apps Script / Google Sheets si deseas automatizar la lectura en vivo
+        function fetchSheetData() {
+            // Ejemplo de llamada opcional a google.script.run si despliegas como App Web de Apps Script
+            /*
+            google.script.run.withSuccessHandler(function(data) {
+                // Renderizar filas dinámicamente aquí
+            }).obtenerPlanificacionHoy();
+            */
+        }
+
+        // Auto-refresco de seguridad cada 30 segundos
+        setInterval(fetchSheetData, 30000);
+    </script>
+</body>
+</html>
