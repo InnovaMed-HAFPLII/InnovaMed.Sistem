@@ -43,12 +43,6 @@
             margin-bottom: 25px;
         }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
         .logo-container img {
             height: 50px;
             object-fit: contain;
@@ -173,17 +167,6 @@
             font-family: monospace;
             font-weight: 600;
         }
-
-        @media (max-width: 1024px) {
-            header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            .logo-container {
-                justify-content: center;
-            }
-        }
     </style>
 </head>
 <body>
@@ -209,7 +192,7 @@
         <!-- TABLA PRINCIPAL -->
         <div class="table-card">
             <div class="date-section-header" id="section-date-header">
-                📅 Cargando fecha...
+                📅 Planificación en Tiempo Real
             </div>
             <div style="overflow-x: auto;">
                 <table>
@@ -229,12 +212,7 @@
                         </tr>
                     </thead>
                     <tbody id="planning-table-body">
-                        <!-- Los datos se cargan dinámicamente desde AppSheet mediante parámetros URL -->
-                        <tr>
-                            <td colspan="11" style="text-align: center; color: #666; padding: 20px;">
-                                Esperando datos desde AppSheet... Seleccione un registro y haga clic en el botón de enlace web.
-                            </td>
-                        </tr>
+                        <!-- Contenido dinámico o de respaldo -->
                     </tbody>
                 </table>
             </div>
@@ -258,9 +236,10 @@
             const estatus = params.get('Estatus');
             const diaHora = params.get('DiaHora');
 
-            // Si se reciben parámetros desde AppSheet, rellenar la tabla
+            const tbody = document.getElementById('planning-table-body');
+
+            // Si AppSheet le pasa los datos de un paciente por la URL, pinta ese registro
             if (paciente) {
-                const tbody = document.getElementById('planning-table-body');
                 const badgeClass = estatus === 'Finalizada' ? 'badge-finalizada' : 'badge-iniciada';
                 
                 tbody.innerHTML = `
@@ -278,15 +257,26 @@
                         <td><span class="badge ${badgeClass}">${estatus || 'Activa'}</span></td>
                     </tr>
                 `;
+            } else {
+                // Si abren la página directamente por el enlace general sin parámetros, muestra una vista limpia de bienvenida
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="text-align: center; color: #666; padding: 30px;">
+                            <strong>ℹ️ Vista general abierta.</strong> Por favor, seleccione un registro en AppSheet y haga clic en el botón de enlace web para visualizar la información del paciente en tiempo real.
+                        </td>
+                    </tr>
+                `;
             }
 
-            // Actualizar la fecha y hora actual en la interfaz
+            // Fechas
             const now = new Date();
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
             const fechaFormateada = now.toLocaleDateString('es-ES', options);
             
             document.getElementById('current-date-display').innerText = `Fecha: ${fechaFormateada}`;
-            document.getElementById('section-date-header').innerText = `📅 ${diaHora || fechaFormateada}`;
+            if(diaHora) {
+                document.getElementById('section-date-header').innerText = `📅 ${diaHora}`;
+            }
         };
     </script>
 </body>
