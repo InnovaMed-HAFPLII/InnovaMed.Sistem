@@ -13,8 +13,10 @@
             --text-main: #333333;
             --text-muted: #666666;
             --border-color: #e0e0e0;
-            --badge-iniciada: #e3f2fd;
-            --badge-iniciada-text: #0d47a1;
+            --badge-programada: #e3f2fd;
+            --badge-programada-text: #0d47a1;
+            --badge-retrasada: #fff3e0;
+            --badge-retrasada-text: #e65100;
             --badge-finalizada: #e8f5e9;
             --badge-finalizada-text: #1b5e20;
         }
@@ -49,7 +51,7 @@
         }
 
         .logo-container img {
-            height: 70px; /* Logo más grande como pediste */
+            height: 70px;
             object-fit: contain;
         }
 
@@ -139,7 +141,7 @@
             border-bottom: 1px solid var(--border-color);
             color: var(--text-main);
             vertical-align: middle;
-            white-space: pre-line; /* Mantiene los saltos de línea de cirujanos y enfermería */
+            white-space: pre-line;
         }
 
         tr:hover {
@@ -154,9 +156,14 @@
             display: inline-block;
         }
 
-        .badge-iniciada {
-            background-color: var(--badge-iniciada);
-            color: var(--badge-iniciada-text);
+        .badge-programada {
+            background-color: var(--badge-programada);
+            color: var(--badge-programada-text);
+        }
+
+        .badge-retrasada {
+            background-color: var(--badge-retrasada);
+            color: var(--badge-retrasada-text);
         }
 
         .badge-finalizada {
@@ -174,7 +181,6 @@
             font-weight: 600;
         }
 
-        /* Estilo para el pie de página centrado */
         footer {
             text-align: center;
             padding: 25px 0 10px 0;
@@ -264,7 +270,8 @@
                 }
 
                 let htmlContent = '';
-                
+                const ahora = new Date(); // Hora actual del monitor
+
                 data.forEach(row => {
                     const quirofano = row['Quirofano'] || '';
                     const paciente = row['Nombre y Apellido'] || '';
@@ -273,12 +280,38 @@
                     const cirujano = row['Cirujanos'] || row['Cirujano'] || '';
                     const enfermeria = row['Enfermería'] || '';
                     const anestesiologo = row['Anestesiologo'] || '';
-                    const hora = row['Hora'] || '';
+                    const horaProg = row['Hora'] || '';
                     const inicio = row['Inicio'] || '';
                     const finalizacion = row['Finalización'] || '-';
-                    const estatus = row['Estatus'] || 'Activa';
+                    
+                    let estatusSheet = row['Estatus'] ? row['Estatus'].trim() : '';
+                    let estatusFinal = 'Programada';
+                    let badgeClass = 'badge-programada';
 
-                    const badgeClass = estatus === 'Finalizada' ? 'badge-finalizada' : 'badge-iniciada';
+                    // 1. Si ya está finalizada en la hoja
+                    if (estatusSheet.toLowerCase() === 'finalizada') {
+                        estatusFinal = 'Finalizada';
+                        badgeClass = 'badge-finalizada';
+                    } 
+                    // 2. Si ya dio inicio
+                    else if (inicio && inicio !== '-') {
+                        estatusFinal = 'Iniciada';
+                        badgeClass = 'badge-programada';
+                    } 
+                    // 3. Lógica automática de retraso (si no ha iniciado y la hora actual superó la hora programada)
+                    else if (horaProg) {
+                        const [hProg, mProg] = horaProg.split(':').map(Number);
+                        const fechaProg = new Date();
+                        fechaProg.setHours(hProg || 0, mProg || 0, 0, 0);
+
+                        if (ahora > fechaProg) {
+                            estatusFinal = 'Retrasada';
+                            badgeClass = 'badge-retrasada';
+                        } else {
+                            estatusFinal = 'Programada';
+                            badgeClass = 'badge-programada';
+                        }
+                    }
 
                     if (paciente || quirofano) {
                         htmlContent += `
@@ -290,10 +323,10 @@
                                 <td><span class="bold-role">${cirujano}</span></td>
                                 <td><span class="bold-role">${enfermeria}</span></td>
                                 <td>${anestesiologo}</td>
-                                <td class="time-cell">${hora}</td>
-                                <td class="time-cell">${inicio}</td>
+                                <td class="time-cell">${horaProg}</td>
+                                <td class="time-cell">${inicio || '-'}</td>
                                 <td class="time-cell">${finalizacion}</td>
-                                <td><span class="badge ${badgeClass}">${estatus}</span></td>
+                                <td><span class="badge ${badgeClass}">${estatusFinal}</span></td>
                             </tr>
                         `;
                     }
