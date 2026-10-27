@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InnovaMed - Planificación del Día</title>
+    <title>InnovaMed - Planificación Quirúrgica del Día</title>
     <style>
         :root {
             --primary-color: #0066cc;
@@ -201,7 +201,7 @@
             </div>
             
             <div class="header-title-container">
-                <h1>Planificación Quirúrgica del Día</h1>
+                <h1>Planificación del Día</h1>
                 <div class="date-badge" id="current-date-display">Fecha actual</div>
             </div>
 
@@ -257,7 +257,7 @@
             const tbody = document.getElementById('planning-table-body');
             try {
                 const response = await fetch(WEB_APP_URL);
-                const data = await response.json();
+                let data = await response.json();
 
                 if (data.error) {
                     tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red;">Error al cargar: ${data.error}</td></tr>`;
@@ -269,8 +269,15 @@
                     return;
                 }
 
+                // Ordenar por hora (de la más temprana a la más tardía)
+                data.sort((a, b) => {
+                    const horaA = a['Hora'] || '99:99:99';
+                    const horaB = b['Hora'] || '99:99:99';
+                    return horaA.localeCompare(horaB);
+                });
+
                 let htmlContent = '';
-                const ahora = new Date(); // Hora actual del monitor
+                const ahora = new Date();
 
                 data.forEach(row => {
                     const quirofano = row['Quirofano'] || '';
@@ -284,25 +291,24 @@
                     const inicio = row['Inicio'] || '';
                     const finalizacion = row['Finalización'] || '-';
                     
-                    let estatusSheet = row['Estatus'] ? row['Estatus'].trim() : '';
+                    let estatusSheet = row['Estatus'] ? row['Estatus'].trim().toLowerCase() : '';
                     let estatusFinal = 'Programada';
                     let badgeClass = 'badge-programada';
 
-                    // 1. Si ya está finalizada en la hoja
-                    if (estatusSheet.toLowerCase() === 'finalizada') {
+                    // Lógica de Estatus
+                    if (estatusSheet === 'finalizada') {
                         estatusFinal = 'Finalizada';
                         badgeClass = 'badge-finalizada';
-                    } 
-                    // 2. Si ya dio inicio
-                    else if (inicio && inicio !== '-') {
+                    } else if (inicio && inicio !== '-' && inicio.trim() !== '') {
                         estatusFinal = 'Iniciada';
                         badgeClass = 'badge-programada';
-                    } 
-                    // 3. Lógica automática de retraso (si no ha iniciado y la hora actual superó la hora programada)
-                    else if (horaProg) {
-                        const [hProg, mProg] = horaProg.split(':').map(Number);
+                    } else if (horaProg) {
+                        const partesHora = horaProg.split(':');
+                        const hProg = parseInt(partesHora[0], 10) || 0;
+                        const mProg = parseInt(partesHora[1], 10) || 0;
+                        
                         const fechaProg = new Date();
-                        fechaProg.setHours(hProg || 0, mProg || 0, 0, 0);
+                        fechaProg.setHours(hProg, mProg, 0, 0);
 
                         if (ahora > fechaProg) {
                             estatusFinal = 'Retrasada';
