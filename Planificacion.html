@@ -224,8 +224,7 @@
     </div>
 
     <script>
-        // PEGA AQUÍ LA URL DE TU APLICACIÓN WEB DE APPS SCRIPT
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyGmT49LOQG5CokZW-U081cDkd6MeB_wsApIQRLSstIVoQzhkr2jWeO5rfu7U1Dpi0m7Q/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKcoaKx9OsH5lwM7xl0y6R1Tqmnb8iyet0sPZieeP7eej7k69XxyVZb3W3-IwVzbyn6Q/exec";
 
         async function cargarAgenda() {
             const tbody = document.getElementById('planning-table-body');
@@ -239,15 +238,13 @@
                 }
 
                 if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: #666; padding: 30px;">No hay registros en la agenda.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: #666; padding: 30px;">No hay cirugías programadas para el día de hoy.</td></tr>`;
                     return;
                 }
 
                 let htmlContent = '';
                 
-                // Recorremos cada fila que viene de Google Sheets
                 data.forEach(row => {
-                    // Asegúrate de que los nombres entre corchetes coincidan exactamente con los encabezados de tus columnas en Google Sheets
                     const quirofano = row['Quirofano'] || '';
                     const paciente = row['Nombre y Apellido'] || '';
                     const diagnostico = row['Diagnostico'] || '';
@@ -262,12 +259,11 @@
 
                     const badgeClass = estatus === 'Finalizada' ? 'badge-finalizada' : 'badge-iniciada';
 
-                    // Omitir filas vacías si no tienen paciente ni quirófano
                     if (paciente || quirofano) {
                         htmlContent += `
                             <tr>
                                 <td><strong>${quirofano}</strong></td>
-                                comm<td>${paciente}</td>
+                                <td>${paciente}</td>
                                 <td>${diagnostico}</td>
                                 <td>${plan}</td>
                                 <td><span class="bold-role">${cirujano}</span></td>
@@ -282,7 +278,7 @@
                     }
                 });
 
-                tbody.innerHTML = htmlContent || `<tr><td colspan="11" style="text-align: center; color: #666; padding: 30px;">No hay registros válidos para mostrar.</td></tr>`;
+                tbody.innerHTML = htmlContent || `<tr><td colspan="11" style="text-align: center; color: #666; padding: 30px;">No hay registros válidos para mostrar hoy.</td></tr>`;
 
             } catch (error) {
                 console.error("Error:", error);
@@ -290,12 +286,10 @@
             }
         }
 
-        // Cargar al iniciar y auto-refrescar cada 15 segundos automáticamente
         window.onload = function() {
             cargarAgenda();
-            setInterval(cargarAgenda, 15000); // Se actualiza solo cada 15 segundos
+            setInterval(cargarAgenda, 15000);
 
-            // Fecha actual
             const now = new Date();
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
             document.getElementById('current-date-display').innerText = `Fecha: ${now.toLocaleDateString('es-ES', options)}`;
