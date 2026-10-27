@@ -134,6 +134,7 @@
             border-bottom: 1px solid var(--border-color);
             color: var(--text-main);
             vertical-align: middle;
+            white-space: pre-line; /* Permite respetar los saltos de línea de los cirujanos y enfermeras */
         }
 
         tr:hover {
@@ -224,7 +225,8 @@
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyhLO57aOsJbYuxoXLOG6dHclPwcU8Rbi07gpFe4K76TLQRWVHab6-z5DVdTao7ungE3w/exec";
+        // PEGA AQUÍ LA URL DE TU APLICACIÓN WEB DE APPS SCRIPT
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwA_n1QZlKJfMCdgs9qtT7KakMXZMya1zQevYgcXdIYW9qO53USMInpPvOqk7Bp9loafA/exec";
 
         async function cargarAgenda() {
             const tbody = document.getElementById('planning-table-body');
@@ -249,7 +251,7 @@
                     const paciente = row['Nombre y Apellido'] || '';
                     const diagnostico = row['Diagnostico'] || '';
                     const plan = row['Plan'] || '';
-                    const cirujano = row['Cirujano'] || '';
+                    const cirujano = row['Cirujanos'] || row['Cirujano'] || '';
                     const enfermeria = row['Enfermería'] || '';
                     const anestesiologo = row['Anestesiologo'] || '';
                     const hora = row['Hora'] || '';
@@ -288,7 +290,7 @@
 
         window.onload = function() {
             cargarAgenda();
-            setInterval(cargarAgenda, 15000);
+            setInterval(cargarAgenda, 15000); // Se actualiza solo cada 15 segundos
 
             const now = new Date();
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
