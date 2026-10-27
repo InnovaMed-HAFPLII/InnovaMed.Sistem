@@ -192,7 +192,7 @@
         <!-- TABLA PRINCIPAL -->
         <div class="table-card">
             <div class="date-section-header" id="section-date-header">
-                📅 Planificación en Tiempo Real
+                📅 Agenda General del Día
             </div>
             <div style="overflow-x: auto;">
                 <table>
@@ -212,7 +212,11 @@
                         </tr>
                     </thead>
                     <tbody id="planning-table-body">
-                        <!-- Contenido dinámico o de respaldo -->
+                        <tr>
+                            <td colspan="11" style="text-align: center; color: #666; padding: 30px;">
+                                🔄 Consultando base de datos en tiempo real...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -220,63 +224,81 @@
     </div>
 
     <script>
-        window.onload = function() {
-            const params = new URLSearchParams(window.location.search);
+        // PEGA AQUÍ LA URL DE TU APLICACIÓN WEB DE APPS SCRIPT
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyGmT49LOQG5CokZW-U081cDkd6MeB_wsApIQRLSstIVoQzhkr2jWeO5rfu7U1Dpi0m7Q/exec";
 
-            const quirofano = params.get('Quirofano');
-            const paciente = params.get('Paciente');
-            const diagnostico = params.get('Diagnostico');
-            const plan = params.get('Plan');
-            const cirujano = params.get('Cirujano');
-            const enfermeria = params.get('Enfermeria');
-            const anestesiologo = params.get('Anestesiologo');
-            const hora = params.get('Hora');
-            const inicio = params.get('Inicio');
-            const finalizacion = params.get('Finalizacion');
-            const estatus = params.get('Estatus');
-            const diaHora = params.get('DiaHora');
-
+        async function cargarAgenda() {
             const tbody = document.getElementById('planning-table-body');
+            try {
+                const response = await fetch(WEB_APP_URL);
+                const data = await response.json();
 
-            // Si AppSheet le pasa los datos de un paciente por la URL, pinta ese registro
-            if (paciente) {
-                const badgeClass = estatus === 'Finalizada' ? 'badge-finalizada' : 'badge-iniciada';
+                if (data.error) {
+                    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red;">Error al cargar: ${data.error}</td></tr>`;
+                    return;
+                }
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: #666; padding: 30px;">No hay registros en la agenda.</td></tr>`;
+                    return;
+                }
+
+                let htmlContent = '';
                 
-                tbody.innerHTML = `
-                    <tr>
-                        <td><strong>${quirofano || 'N/A'}</strong></td>
-                        <td>${paciente}</td>
-                        <td>${diagnostico || ''}</td>
-                        <td>${plan || ''}</td>
-                        <td><span class="bold-role">${cirujano || ''}</span></td>
-                        <td><span class="bold-role">${enfermeria || ''}</span></td>
-                        <td>${anestesiologo || ''}</td>
-                        <td class="time-cell">${hora || ''}</td>
-                        <td class="time-cell">${inicio || ''}</td>
-                        <td class="time-cell">${finalizacion || '-'}</td>
-                        <td><span class="badge ${badgeClass}">${estatus || 'Activa'}</span></td>
-                    </tr>
-                `;
-            } else {
-                // Si abren la página directamente por el enlace general sin parámetros, muestra una vista limpia de bienvenida
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="11" style="text-align: center; color: #666; padding: 30px;">
-                            <strong>ℹ️ Vista general abierta.</strong> Por favor, seleccione un registro en AppSheet y haga clic en el botón de enlace web para visualizar la información del paciente en tiempo real.
-                        </td>
-                    </tr>
-                `;
-            }
+                // Recorremos cada fila que viene de Google Sheets
+                data.forEach(row => {
+                    // Asegúrate de que los nombres entre corchetes coincidan exactamente con los encabezados de tus columnas en Google Sheets
+                    const quirofano = row['Quirofano'] || '';
+                    const paciente = row['Nombre y Apellido'] || '';
+                    const diagnostico = row['Diagnostico'] || '';
+                    const plan = row['Plan'] || '';
+                    const cirujano = row['Cirujano'] || '';
+                    const enfermeria = row['Enfermería'] || '';
+                    const anestesiologo = row['Anestesiologo'] || '';
+                    const hora = row['Hora'] || '';
+                    const inicio = row['Inicio'] || '';
+                    const finalizacion = row['Finalización'] || '-';
+                    const estatus = row['Estatus'] || 'Activa';
 
-            // Fechas
+                    const badgeClass = estatus === 'Finalizada' ? 'badge-finalizada' : 'badge-iniciada';
+
+                    // Omitir filas vacías si no tienen paciente ni quirófano
+                    if (paciente || quirofano) {
+                        htmlContent += `
+                            <tr>
+                                <td><strong>${quirofano}</strong></td>
+                                comm<td>${paciente}</td>
+                                <td>${diagnostico}</td>
+                                <td>${plan}</td>
+                                <td><span class="bold-role">${cirujano}</span></td>
+                                <td><span class="bold-role">${enfermeria}</span></td>
+                                <td>${anestesiologo}</td>
+                                <td class="time-cell">${hora}</td>
+                                <td class="time-cell">${inicio}</td>
+                                <td class="time-cell">${finalizacion}</td>
+                                <td><span class="badge ${badgeClass}">${estatus}</span></td>
+                            </tr>
+                        `;
+                    }
+                });
+
+                tbody.innerHTML = htmlContent || `<tr><td colspan="11" style="text-align: center; color: #666; padding: 30px;">No hay registros válidos para mostrar.</td></tr>`;
+
+            } catch (error) {
+                console.error("Error:", error);
+                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 30px;">Error de conexión con la base de datos.</td></tr>`;
+            }
+        }
+
+        // Cargar al iniciar y auto-refrescar cada 15 segundos automáticamente
+        window.onload = function() {
+            cargarAgenda();
+            setInterval(cargarAgenda, 15000); // Se actualiza solo cada 15 segundos
+
+            // Fecha actual
             const now = new Date();
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            const fechaFormateada = now.toLocaleDateString('es-ES', options);
-            
-            document.getElementById('current-date-display').innerText = `Fecha: ${fechaFormateada}`;
-            if(diaHora) {
-                document.getElementById('section-date-header').innerText = `📅 ${diaHora}`;
-            }
+            document.getElementById('current-date-display').innerText = `Fecha: ${now.toLocaleDateString('es-ES', options)}`;
         };
     </script>
 </body>
