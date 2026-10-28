@@ -30,6 +30,8 @@
             --badge-fin-border: #176b2b;
             --badge-init-bg: #087f8c;
             --badge-init-border: #06616b;
+            --badge-dif-bg: #546e7a;       /* Gris azulado sobrio para Diferida */
+            --badge-dif-border: #37474f;
         }
 
         body {
@@ -223,6 +225,11 @@
             border-color: var(--badge-init-border);
         }
 
+        .badge-diferida {
+            background-color: var(--badge-dif-bg);
+            border-color: var(--badge-dif-border);
+        }
+
         .bold-role {
             font-weight: 800;
             color: #0b2545;
@@ -357,8 +364,11 @@
                     let estatusFinal = 'Programada';
                     let badgeClass = 'badge-programada';
 
-                    // Lógica de Estatus
-                    if (estatusSheet === 'finalizada') {
+                    // Lógica de Estatus Prioritaria (incluyendo "diferida")
+                    if (estatusSheet === 'diferida' || estatusSheet === 'diferido') {
+                        estatusFinal = 'Diferida';
+                        badgeClass = 'badge-diferida';
+                    } else if (estatusSheet === 'finalizada') {
                         estatusFinal = 'Finalizada';
                         badgeClass = 'badge-finalizada';
                     } else if (inicio && inicio !== '-' && inicio.trim() !== '') {
@@ -404,18 +414,4 @@
 
             } catch (error) {
                 console.error("Error:", error);
-                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 40px;">Error de conexión con la base de datos.</td></tr>`;
-            }
-        }
-
-        window.onload = function() {
-            cargarAgenda();
-            setInterval(cargarAgenda, 15000);
-
-            const now = new Date();
-            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            document.getElementById('current-date-display').innerText = `Fecha: ${now.toLocaleDateString('es-ES', options)}`;
-        };
-    </script>
-</body>
-</html>
+                tbody
