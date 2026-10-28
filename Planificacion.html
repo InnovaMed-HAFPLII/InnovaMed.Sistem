@@ -6,8 +6,6 @@
     <title>InnovaMed - Planificación Quirúrgica</title>
     <style>
         :root {
-            /* Paleta quirúrgica sobria: azules alternados y estados de alto contraste */
-            --bg-gradient: linear-gradient(135deg, #102a43 0%, #174967 55%, #236b91 100%);
             --app-bg: #e7eff7;
             --card-bg: #f3f7fc;
             --primary-blue: #174f78;
@@ -21,7 +19,7 @@
             --row-blue-b: #d5e7f7;
             --row-hover: #c4def3;
 
-            /* Estados intensos, distinguibles a simple vista */
+            /* Estados intensos */
             --badge-prog-bg: #075db8;
             --badge-prog-border: #064b93;
             --badge-ret-bg: #ef6c00;
@@ -30,7 +28,7 @@
             --badge-fin-border: #176b2b;
             --badge-init-bg: #087f8c;
             --badge-init-border: #06616b;
-            --badge-dif-bg: #546e7a;       /* Gris azulado sobrio para Diferida */
+            --badge-dif-bg: #546e7a;
             --badge-dif-border: #37474f;
         }
 
@@ -52,7 +50,6 @@
             width: 100%;
         }
 
-        /* ENCABEZADO MODERNO */
         header {
             background: linear-gradient(135deg, #ffffff 0%, #f4f8fc 100%);
             padding: 22px 35px;
@@ -120,7 +117,6 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
         }
 
-        /* TARJETA CONTENEDORA DE TABLA */
         .table-card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -140,7 +136,6 @@
             text-transform: uppercase;
         }
 
-        /* TABLA ELEGANTE */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -190,7 +185,6 @@
             transition: background-color 0.2s ease;
         }
 
-        /* BURBUJAS DE ESTATUS PROFESIONALES */
         .badge {
             padding: 7px 16px;
             border-radius: 20px;
@@ -248,7 +242,6 @@
             font-size: 14.5px;
         }
 
-        /* PIE DE PÁGINA */
         footer {
             text-align: center;
             padding: 30px 0 10px 0;
@@ -320,6 +313,7 @@
     </footer>
 
     <script>
+        // PEGA AQUÍ TU URL CORRECTA DE APPS SCRIPT
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby2DRWAG43_a847b1KZvzdU3KFSFdf_wIuPkEgyKPA8nreYxXzT5uFcfmd1ldcqdzCfpw/exec";
 
         async function cargarAgenda() {
@@ -346,7 +340,6 @@
                 });
 
                 let htmlContent = '';
-                const ahora = new Date();
 
                 data.forEach(row => {
                     const quirofano = row['Quirofano'] || '';
@@ -360,35 +353,27 @@
                     const inicio = row['Inicio'] || '';
                     const finalizacion = row['Finalización'] || '-';
                     
-                    let estatusSheet = row['Estatus'] ? row['Estatus'].trim().toLowerCase() : '';
+                    // Leemos directamente el estatus que viene de AppSheet (columna Estatus_Auto o Estatus)
+                    const estatusSheet = (row['Estatus_Auto'] || row['Estatus'] || 'Programada').trim().toLowerCase();
+                    
                     let estatusFinal = 'Programada';
                     let badgeClass = 'badge-programada';
 
-                    // Lógica de Estatus Prioritaria (incluyendo "diferida")
-                    if (estatusSheet === 'diferida' || estatusSheet === 'diferido') {
+                    if (estatusSheet.includes('diferida') || estatusSheet.includes('diferido')) {
                         estatusFinal = 'Diferida';
                         badgeClass = 'badge-diferida';
-                    } else if (estatusSheet === 'finalizada') {
+                    } else if (estatusSheet.includes('finalizada')) {
                         estatusFinal = 'Finalizada';
                         badgeClass = 'badge-finalizada';
-                    } else if (inicio && inicio !== '-' && inicio.trim() !== '') {
+                    } else if (estatusSheet.includes('retrasada')) {
+                        estatusFinal = 'Retrasada';
+                        badgeClass = 'badge-retrasada';
+                    } else if (estatusSheet.includes('iniciada')) {
                         estatusFinal = 'Iniciada';
                         badgeClass = 'badge-iniciada';
-                    } else if (horaProg) {
-                        const partesHora = horaProg.split(':');
-                        const hProg = parseInt(partesHora[0], 10) || 0;
-                        const mProg = parseInt(partesHora[1], 10) || 0;
-                        
-                        const fechaProg = new Date();
-                        fechaProg.setHours(hProg, mProg, 0, 0);
-
-                        if (ahora > fechaProg) {
-                            estatusFinal = 'Retrasada';
-                            badgeClass = 'badge-retrasada';
-                        } else {
-                            estatusFinal = 'Programada';
-                            badgeClass = 'badge-programada';
-                        }
+                    } else {
+                        estatusFinal = 'Programada';
+                        badgeClass = 'badge-programada';
                     }
 
                     if (paciente || quirofano) {
@@ -414,4 +399,18 @@
 
             } catch (error) {
                 console.error("Error:", error);
-                tbody
+                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 40px;">Error de conexión con la base de datos.</td></tr>`;
+            }
+        }
+
+        window.onload = function() {
+            cargarAgenda();
+            setInterval(cargarAgenda, 15000);
+
+            const now = new Date();
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            document.getElementById('current-date-display').innerText = `Fecha: ${now.toLocaleDateString('es-ES', options)}`;
+        };
+    </script>
+</body>
+</html>
