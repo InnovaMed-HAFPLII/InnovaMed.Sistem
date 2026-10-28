@@ -3,61 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InnovaMed - Planificación del Día</title>
+    <title>InnovaMed - Planificación Quirúrgica</title>
     <style>
         :root {
-            --primary-color: #004080;
-            --secondary-color: #002b55;
+            /* Paleta Quirúrgica Moderna en Tonos Azules Profundos y Claros */
+            --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --app-bg: #e6f0fa;
+            --card-bg: #ffffff;
+            --primary-blue: #0056b3;
+            --dark-blue: #0b2545;
+            --accent-blue: #3399ff;
+            --border-light: #d1e3f8;
+            --text-main: #102a43;
+            --text-muted: #486581;
             
-            /* Paleta de Azules para Fondos (Sin Blanco) */
-            --bg-body: #dceaf7;            /* Fondo principal azul suave */
-            --card-bg: #ebf3fa;            /* Fondo de contenedor azul claro */
-            --header-strip: #bcdcfa;        /* Azul medio para franjas/encabezados */
-            --th-bg: #cbe0f5;              /* Fondo de encabezados de tabla */
-            --row-hover: #d5e5f5;          /* Fondo al pasar el cursor */
-            --border-color: #a8caea;       /* Bordes en tono azul */
-            --text-main: #0a192f;          /* Letras en azul oscuro / negro */
-            --text-muted: #1e3a5f;
-            
-            /* Colores de las burbujas de estatus (con letras negras) */
-            --badge-programada: #90caf9;   /* Azul medio para Programada/Iniciada */
-            --badge-retrasada: #ffcc80;    /* Naranja claro para Retrasada */
-            --badge-finalizada: #a5d6a7;   /* Verde claro para Finalizada */
+            /* Burbujas de Estatus con Estilo Clínico */
+            --badge-prog-bg: #e1f5fe;
+            --badge-prog-border: #81d4fa;
+            --badge-ret-bg: #fff3e0;
+            --badge-ret-border: #ffb74d;
+            --badge-fin-bg: #e8f5e9;
+            --badge-fin-border: #a5d6a7;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-body);
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--app-bg);
             color: var(--text-main);
-            font-weight: bold; /* Todas las letras en negrita */
             margin: 0;
-            padding: 20px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
             min-height: 95vh;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1450px;
             margin: 0 auto;
             flex: 1;
             width: 100%;
         }
 
+        /* ENCABEZADO MODERNO */
         header {
-            background-color: var(--card-bg);
-            padding: 20px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 40, 80, 0.12);
+            background: linear-gradient(135deg, #ffffff 0%, #f4f8fc 100%);
+            padding: 22px 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(11, 37, 69, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
-            border: 2px solid var(--border-color);
+            border: 1px solid var(--border-light);
         }
 
         .logo-container img {
-            height: 70px;
+            height: 65px;
             object-fit: contain;
         }
 
@@ -68,31 +69,33 @@
 
         h1 {
             margin: 0;
-            color: var(--primary-color);
-            font-size: 28px;
-            letter-spacing: 1px;
+            color: var(--dark-blue);
+            font-size: 26px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
-            font-weight: 900;
+            font-weight: 800;
         }
 
         .date-badge {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
-            margin-top: 5px;
-            font-weight: bold;
+            margin-top: 6px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             font-size: 13px;
-            color: #1b5e20;
-            background: #c8e6c9;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-weight: bold;
-            border: 1px solid #81c784;
+            color: #0d532a;
+            background: #e8f8f0;
+            padding: 10px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            border: 1px solid #b2e8cf;
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
         }
 
         .pulse-dot {
@@ -104,30 +107,32 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.6); }
             70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(46, 125, 50, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
         }
 
+        /* TARJETA CONTENEDORA DE TABLA */
         .table-card {
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 40, 80, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(11, 37, 69, 0.08);
             overflow: hidden;
-            padding: 10px;
-            border: 2px solid var(--border-color);
+            border: 1px solid var(--border-light);
         }
 
         .date-section-header {
-            background: var(--header-strip);
-            padding: 12px 20px;
-            font-weight: bold;
-            color: var(--secondary-color);
-            border-bottom: 2px solid var(--border-color);
-            font-size: 16px;
-            text-decoration: underline;
+            background: linear-gradient(90deg, #edf4fc 0%, #d8e8fc 100%);
+            padding: 15px 25px;
+            font-weight: 800;
+            color: var(--dark-blue);
+            border-bottom: 2px solid var(--border-light);
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
+        /* TABLA ELEGANTE */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -136,77 +141,88 @@
         }
 
         th {
-            background-color: var(--th-bg);
-            color: var(--secondary-color);
-            padding: 14px 12px;
-            font-weight: 900;
-            border-bottom: 2px solid var(--border-color);
+            background-color: #f1f6fc;
+            color: var(--dark-blue);
+            padding: 16px 14px;
+            font-weight: 800;
+            border-bottom: 2px solid var(--border-light);
             text-transform: uppercase;
             font-size: 12px;
-            letter-spacing: 0.5px;
-            text-decoration: underline;
+            letter-spacing: 0.8px;
         }
 
         td {
-            padding: 14px 12px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 16px 14px;
+            border-bottom: 1px solid #edf2f7;
             color: var(--text-main);
-            font-weight: bold;
+            font-weight: 750;
             vertical-align: middle;
             white-space: pre-line;
+            line-height: 1.4;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
         }
 
         tr:hover {
-            background-color: var(--row-hover);
+            background-color: #f5f9ff;
+            transition: background-color 0.2s ease;
         }
 
-        /* Burbujas de estatus */
+        /* BURBUJAS DE ESTATUS PROFESIONALES */
         .badge {
-            padding: 6px 14px;
+            padding: 7px 16px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
-            color: #000000 !important; /* Letras en negro */
+            font-weight: 800;
+            color: #000000 !important;
             display: inline-block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+            letter-spacing: 0.3px;
         }
 
         .badge-programada {
-            background-color: var(--badge-programada);
-            border: 1px solid #64b5f6;
+            background-color: var(--badge-prog-bg);
+            border: 1.5px solid var(--badge-prog-border);
         }
 
         .badge-retrasada {
-            background-color: var(--badge-retrasada);
-            border: 1px solid #ffb74d;
+            background-color: var(--badge-ret-bg);
+            border: 1.5px solid var(--badge-ret-border);
         }
 
         .badge-finalizada {
-            background-color: var(--badge-finalizada);
-            border: 1px solid #81c784;
+            background-color: var(--badge-fin-bg);
+            border: 1.5px solid var(--badge-fin-border);
         }
 
         .bold-role {
-            font-weight: bold;
-            color: #002b55;
+            font-weight: 800;
+            color: #0b2545;
         }
 
         .highlight-underline {
             text-decoration: underline;
+            text-decoration-color: var(--accent-blue);
+            text-underline-offset: 3px;
         }
 
         .time-cell {
-            font-family: monospace;
-            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 800;
+            color: #0f2027;
+            font-size: 14.5px;
         }
 
+        /* PIE DE PÁGINA */
         footer {
             text-align: center;
-            padding: 25px 0 10px 0;
+            padding: 30px 0 10px 0;
             color: var(--text-muted);
             font-size: 13px;
             font-style: italic;
-            font-weight: bold;
+            font-weight: 700;
             letter-spacing: 0.5px;
         }
     </style>
@@ -255,7 +271,7 @@
                     </thead>
                     <tbody id="planning-table-body">
                         <tr>
-                            <td colspan="11" style="text-align: center; color: #002b55; padding: 30px;">
+                            <td colspan="11" style="text-align: center; color: var(--dark-blue); padding: 40px;">
                                 🔄 Consultando base de datos en tiempo real...
                             </td>
                         </tr>
@@ -285,7 +301,7 @@
                 }
 
                 if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: #002b55; padding: 30px;">No hay cirugías programadas para el día de hoy.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--dark-blue); padding: 40px;">No hay cirugías programadas para el día de hoy.</td></tr>`;
                     return;
                 }
 
@@ -358,11 +374,11 @@
                     }
                 });
 
-                tbody.innerHTML = htmlContent || `<tr><td colspan="11" style="text-align: center; color: #002b55; padding: 30px;">No hay registros válidos para mostrar hoy.</td></tr>`;
+                tbody.innerHTML = htmlContent || `<tr><td colspan="11" style="text-align: center; color: var(--dark-blue); padding: 40px;">No hay registros válidos para mostrar hoy.</td></tr>`;
 
             } catch (error) {
                 console.error("Error:", error);
-                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 30px;">Error de conexión con la base de datos.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 40px;">Error de conexión con la base de datos.</td></tr>`;
             }
         }
 
