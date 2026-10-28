@@ -6,24 +6,30 @@
     <title>InnovaMed - Planificación Quirúrgica</title>
     <style>
         :root {
-            /* Paleta Quirúrgica Moderna en Tonos Azules Profundos y Claros */
-            --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            --app-bg: #e6f0fa;
-            --card-bg: #ffffff;
-            --primary-blue: #0056b3;
-            --dark-blue: #0b2545;
-            --accent-blue: #3399ff;
-            --border-light: #d1e3f8;
+            /* Paleta quirúrgica sobria: azules alternados y estados de alto contraste */
+            --bg-gradient: linear-gradient(135deg, #102a43 0%, #174967 55%, #236b91 100%);
+            --app-bg: #e7eff7;
+            --card-bg: #f3f7fc;
+            --primary-blue: #174f78;
+            --dark-blue: #123b5d;
+            --accent-blue: #2878b5;
+            --border-light: #b9d0e4;
             --text-main: #102a43;
             --text-muted: #486581;
-            
-            /* Burbujas de Estatus con Estilo Clínico */
-            --badge-prog-bg: #e1f5fe;
-            --badge-prog-border: #81d4fa;
-            --badge-ret-bg: #fff3e0;
-            --badge-ret-border: #ffb74d;
-            --badge-fin-bg: #e8f5e9;
-            --badge-fin-border: #a5d6a7;
+
+            --row-blue-a: #eaf3fc;
+            --row-blue-b: #d5e7f7;
+            --row-hover: #c4def3;
+
+            /* Estados intensos, distinguibles a simple vista */
+            --badge-prog-bg: #075db8;
+            --badge-prog-border: #064b93;
+            --badge-ret-bg: #ef6c00;
+            --badge-ret-border: #c65300;
+            --badge-fin-bg: #218739;
+            --badge-fin-border: #176b2b;
+            --badge-init-bg: #087f8c;
+            --badge-init-border: #06616b;
         }
 
         body {
@@ -118,11 +124,11 @@
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(11, 37, 69, 0.08);
             overflow: hidden;
-            border: 1px solid var(--border-light);
+            border: 1px solid #b9d0e4;
         }
 
         .date-section-header {
-            background: linear-gradient(90deg, #edf4fc 0%, #d8e8fc 100%);
+            background: linear-gradient(90deg, #d5e7f7 0%, #b8d4ec 100%);
             padding: 15px 25px;
             font-weight: 800;
             color: var(--dark-blue);
@@ -141,11 +147,11 @@
         }
 
         th {
-            background-color: #f1f6fc;
-            color: var(--dark-blue);
+            background-color: #174f78;
+            color: #ffffff;
             padding: 16px 14px;
             font-weight: 800;
-            border-bottom: 2px solid var(--border-light);
+            border-bottom: 2px solid #0d3858;
             text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 0.8px;
@@ -161,12 +167,24 @@
             line-height: 1.4;
         }
 
-        tr:last-child td {
+        tbody tr:nth-child(odd) {
+            background-color: var(--row-blue-a);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--row-blue-b);
+        }
+
+        tbody td {
+            border-bottom: 1px solid #b9d0e4;
+        }
+
+        tbody tr:last-child td {
             border-bottom: none;
         }
 
-        tr:hover {
-            background-color: #f5f9ff;
+        tbody tr:hover {
+            background-color: var(--row-hover);
             transition: background-color 0.2s ease;
         }
 
@@ -176,25 +194,33 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 800;
-            color: #000000 !important;
+            color: #ffffff !important;
             display: inline-block;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+            min-width: 88px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(11, 37, 69, 0.18);
             letter-spacing: 0.3px;
+            border: 1.5px solid transparent;
         }
 
         .badge-programada {
             background-color: var(--badge-prog-bg);
-            border: 1.5px solid var(--badge-prog-border);
+            border-color: var(--badge-prog-border);
         }
 
         .badge-retrasada {
             background-color: var(--badge-ret-bg);
-            border: 1.5px solid var(--badge-ret-border);
+            border-color: var(--badge-ret-border);
         }
 
         .badge-finalizada {
             background-color: var(--badge-fin-bg);
-            border: 1.5px solid var(--badge-fin-border);
+            border-color: var(--badge-fin-border);
+        }
+
+        .badge-iniciada {
+            background-color: var(--badge-init-bg);
+            border-color: var(--badge-init-border);
         }
 
         .bold-role {
@@ -337,7 +363,7 @@
                         badgeClass = 'badge-finalizada';
                     } else if (inicio && inicio !== '-' && inicio.trim() !== '') {
                         estatusFinal = 'Iniciada';
-                        badgeClass = 'badge-programada';
+                        badgeClass = 'badge-iniciada';
                     } else if (horaProg) {
                         const partesHora = horaProg.split(':');
                         const hProg = parseInt(partesHora[0], 10) || 0;
