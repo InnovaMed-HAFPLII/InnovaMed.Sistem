@@ -6,25 +6,30 @@
     <title>InnovaMed - Planificación del Día</title>
     <style>
         :root {
-            --primary-color: #0056b3;
-            --secondary-color: #003366;
-            --bg-color: #eef4f9; /* Fondo azulito general */
-            --card-bg: #ffffff;
-            --text-main: #1a1a1a;
-            --text-muted: #555555;
-            --border-color: #d0d7de;
+            --primary-color: #004080;
+            --secondary-color: #002b55;
             
-            /* Colores de las burbujas de estatus */
-            --badge-programada: #b3e5fc;   /* Azul claro */
-            --badge-retrasada: #ffe0b2;    /* Naranja claro */
-            --badge-finalizada: #c8e6c9;   /* Verde claro */
+            /* Paleta de Azules para Fondos (Sin Blanco) */
+            --bg-body: #dceaf7;            /* Fondo principal azul suave */
+            --card-bg: #ebf3fa;            /* Fondo de contenedor azul claro */
+            --header-strip: #bcdcfa;        /* Azul medio para franjas/encabezados */
+            --th-bg: #cbe0f5;              /* Fondo de encabezados de tabla */
+            --row-hover: #d5e5f5;          /* Fondo al pasar el cursor */
+            --border-color: #a8caea;       /* Bordes en tono azul */
+            --text-main: #0a192f;          /* Letras en azul oscuro / negro */
+            --text-muted: #1e3a5f;
+            
+            /* Colores de las burbujas de estatus (con letras negras) */
+            --badge-programada: #90caf9;   /* Azul medio para Programada/Iniciada */
+            --badge-retrasada: #ffcc80;    /* Naranja claro para Retrasada */
+            --badge-finalizada: #a5d6a7;   /* Verde claro para Finalizada */
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-body);
             color: var(--text-main);
-            font-weight: bold; /* Todas las letras en negrita por defecto */
+            font-weight: bold; /* Todas las letras en negrita */
             margin: 0;
             padding: 20px;
             display: flex;
@@ -43,16 +48,16 @@
             background-color: var(--card-bg);
             padding: 20px 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 40, 80, 0.12);
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
-            border: 1px solid #dcdcdc;
+            border: 2px solid var(--border-color);
         }
 
         .logo-container img {
-            height: 80px;
+            height: 70px;
             object-fit: contain;
         }
 
@@ -83,44 +88,44 @@
             gap: 8px;
             font-size: 13px;
             color: #1b5e20;
-            background: #e8f5e9;
+            background: #c8e6c9;
             padding: 8px 14px;
             border-radius: 20px;
             font-weight: bold;
-            border: 1px solid #c8e6c9;
+            border: 1px solid #81c784;
         }
 
         .pulse-dot {
             width: 10px;
             height: 10px;
-            background-color: #4caf50;
+            background-color: #2e7d32;
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(76, 175, 80, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(46, 125, 50, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
         }
 
         .table-card {
             background: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 40, 80, 0.12);
             overflow: hidden;
             padding: 10px;
-            border: 1px solid #dcdcdc;
+            border: 2px solid var(--border-color);
         }
 
         .date-section-header {
-            background: #e3f2fd;
+            background: var(--header-strip);
             padding: 12px 20px;
             font-weight: bold;
             color: var(--secondary-color);
             border-bottom: 2px solid var(--border-color);
             font-size: 16px;
-            text-decoration: underline; /* Resaltado con subrayado */
+            text-decoration: underline;
         }
 
         table {
@@ -131,7 +136,7 @@
         }
 
         th {
-            background-color: #dbeafe;
+            background-color: var(--th-bg);
             color: var(--secondary-color);
             padding: 14px 12px;
             font-weight: 900;
@@ -139,54 +144,53 @@
             text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 0.5px;
-            text-decoration: underline; /* Cabeceras resaltadas con subrayado */
+            text-decoration: underline;
         }
 
         td {
             padding: 14px 12px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-main);
-            font-weight: bold; /* Todo en negrita */
+            font-weight: bold;
             vertical-align: middle;
             white-space: pre-line;
         }
 
         tr:hover {
-            background-color: #f0f7ff;
+            background-color: var(--row-hover);
         }
 
-        /* Burbujas de estatus: color correspondiente según estado, letras negras y en negrita */
+        /* Burbujas de estatus */
         .badge {
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
-            color: #000000 !important; /* Letras en negro obligatorio */
+            color: #000000 !important; /* Letras en negro */
             display: inline-block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
         }
 
         .badge-programada {
             background-color: var(--badge-programada);
-            border: 1px solid #81d4fa;
+            border: 1px solid #64b5f6;
         }
 
         .badge-retrasada {
-            background-color: var(--badge-retrasada); /* Naranja */
+            background-color: var(--badge-retrasada);
             border: 1px solid #ffb74d;
         }
 
         .badge-finalizada {
-            background-color: var(--badge-finalizada); /* Verde */
+            background-color: var(--badge-finalizada);
             border: 1px solid #81c784;
         }
 
         .bold-role {
             font-weight: bold;
-            color: #0f172a;
+            color: #002b55;
         }
 
-        /* Elementos que deben ir subrayados para resaltar */
         .highlight-underline {
             text-decoration: underline;
         }
@@ -251,7 +255,7 @@
                     </thead>
                     <tbody id="planning-table-body">
                         <tr>
-                            <td colspan="11" style="text-align: center; color: #333; padding: 30px;">
+                            <td colspan="11" style="text-align: center; color: #002b55; padding: 30px;">
                                 🔄 Consultando base de datos en tiempo real...
                             </td>
                         </tr>
@@ -281,7 +285,7 @@
                 }
 
                 if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: #333; padding: 30px;">No hay cirugías programadas para el día de hoy.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: #002b55; padding: 30px;">No hay cirugías programadas para el día de hoy.</td></tr>`;
                     return;
                 }
 
@@ -354,7 +358,7 @@
                     }
                 });
 
-                tbody.innerHTML = htmlContent || `<tr><td colspan="11" style="text-align: center; color: #333; padding: 30px;">No hay registros válidos para mostrar hoy.</td></tr>`;
+                tbody.innerHTML = htmlContent || `<tr><td colspan="11" style="text-align: center; color: #002b55; padding: 30px;">No hay registros válidos para mostrar hoy.</td></tr>`;
 
             } catch (error) {
                 console.error("Error:", error);
